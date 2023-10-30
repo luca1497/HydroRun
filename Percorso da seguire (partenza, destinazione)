@@ -1,0 +1,94 @@
+#import UIKit
+#import MapKit
+
+class ViewController: UIViewController, MKMapViewDelegate {
+
+    let mapView: MKMapView = {
+        let map = MKMapView()
+        map.translatesAutoresizingMaskIntoConstraints = false
+        return map
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Aggiungi la mappa alla vista
+        view.addSubview(mapView)
+
+        // Imposta il delegato della mappa
+        mapView.delegate = self
+
+        // Aggiungi vincoli per la mappa
+        NSLayoutConstraint.activate([
+            mapView.topAnchor.constraint(equalTo: view.topAnchor),
+            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        // Crea le coordinate di partenza e destinazione
+        let sourceCoordinate = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194) // San Francisco, CA
+        let destinationCoordinate = CLLocationCoordinate2D(latitude: 34.0522, longitude: -118.2437) // Los Angeles, CA
+
+        // Aggiungi i marcatori sulla mappa
+        let sourcePlacemark = MKPlacemark(coordinate: sourceCoordinate, addressDictionary: nil)
+        let destinationPlacemark = MKPlacemark(coordinate: destinationCoordinate, addressDictionary: nil)
+
+        let sourceItem = MKMapItem(placemark: sourcePlacemark)
+        let destinationItem = MKMapItem(placemark: destinationPlacemark)
+
+        let sourceAnnotation = MKPointAnnotation()
+        sourceAnnotation.title = "Partenza"
+        if let location = sourcePlacemark.location {
+            sourceAnnotation.coordinate = location.coordinate
+        }
+
+        let destinationAnnotation = MKPointAnnotation()
+        destinationAnnotation.title = "Destinazione"
+        if let location = destinationPlacemark.location {
+            destinationAnnotation.coordinate = location.coordinate
+        }
+
+        mapView.addAnnotations([sourceAnnotation, destinationAnnotation])
+
+        // Creare una richiesta di direzione
+        let directionRequest = MKDirections.Request()
+        directionRequest.source = sourceItem
+        directionRequest.destination = destinationItem
+        directionRequest.transportType = .runner
+
+        // Ottenere le indicazioni per il percorso
+        let directions = MKDirections(request: directionRequest)
+
+        directions.calculate { [unowned self] (response, error) in
+            guard let response = response else {
+                if let error = error {
+                    print("Errore nel calcolo delle indicazioni: \(error.localizedDescription)")
+                }
+                return
+            }
+
+            // Estrai il percorso dalla risposta
+            let route = response.routes[0]
+
+            // Aggiungi il percorso alla mappa
+            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+
+            // Imposta la regione della mappa in modo che mostri il percorso completo
+            let rect = route.polyline.boundingMapRect
+            self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+        }
+    }
+
+    // MARK: - MKMapViewDelegate
+
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if overlay is MKPolyline {
+            let renderer = MKPolylineRenderer(overlay: overlay)
+            renderer.strokeColor = UIColor.blue
+            renderer.lineWidth = 3
+            return renderer
+        }
+        return MKOverlayRenderer(overlay: overlay)
+    }
+}
