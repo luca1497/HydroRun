@@ -46,4 +46,4 @@ class ViewController: UIViewController {
     }
 }
 
-In questo esempio, vengono creati due pulsanti, "Start" e "Stop". Quando il pulsante "Start" viene premuto, viene avviato un processo simulato utilizzando un timer. Quando il pulsante "Stop" viene premuto, il timer viene invalidato, interrompendo così il processo. 
+/In questo esempio, vengono creati due pulsanti, "Start" e "Stop". Quando il pulsante "Start" viene premuto, viene avviato un processo simulato utilizzando un timer. Quando il pulsante "Stop" viene premuto, il timer viene invalidato, interrompendo così il processo. 
