@@ -1,0 +1,44 @@
+Per far sì che un tasto "Play" si trasformi in un tasto "Pausa" e viceversa, 
+utilizza un UIButton e cambia il titolo del pulsante in risposta agli eventi di touch.
+
+
+
+#import UIKit
+
+class ViewController: UIViewController {
+
+    @IBOutlet weak var playPauseButton: UIButton!
+
+    var isPlaying = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Imposta l'azione per il pulsante
+        playPauseButton.addTarget(self, action: #selector(playPauseButtonTapped), for: .touchUpInside)
+    }
+
+    @objc func playPauseButtonTapped() {
+        // Inverti lo stato di riproduzione
+        isPlaying.toggle()
+
+        // Aggiorna il titolo del pulsante in base allo stato
+        let title = isPlaying ? "Pausa" : "Play"
+        playPauseButton.setTitle(title, for: .normal)
+
+        // Esegui l'azione appropriata in base allo stato
+        if isPlaying {
+            // Codice per avviare la riproduzione
+            print("Avvia la riproduzione")
+        } else {
+            // Codice per mettere in pausa la riproduzione
+            print("Metti in pausa la riproduzione")
+        }
+    }
+}
+
+
+//Abbiamo un pulsante (playPauseButton) collegato all'interfaccia utente tramite un IBOutlet. 
+Quando il pulsante viene premuto (playPauseButtonTapped), lo stato di riproduzione (isPlaying) 
+viene invertito e il titolo del pulsante viene aggiornato di conseguenza. In base allo stato attuale,
+puoi eseguire le azioni appropriate, come avviare o mettere in pausa la riproduzione.
