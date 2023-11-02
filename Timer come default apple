@@ -1,0 +1,98 @@
+import UIKit
+
+class TimerViewController: UIViewController {
+
+    var timer = Timer()
+    var seconds = 60 // Impostiamo il timer a 60 secondi inizialmente
+    var isTimerRunning = false
+
+    let timerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "01:00"
+        label.font = UIFont.systemFont(ofSize: 40)
+        label.textAlignment = .center
+        return label
+    }()
+
+    let startButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Start", for: .normal)
+        button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
+        return button
+    }()
+
+    let pauseButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Pause", for: .normal)
+        button.addTarget(self, action: #selector(pauseTimer), for: .touchUpInside)
+        return button
+    }()
+
+    let resetButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Reset", for: .normal)
+        button.addTarget(self, action: #selector(resetTimer), for: .touchUpInside)
+        return button
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .white
+
+        // Aggiungi i controlli all'interfaccia utente
+        view.addSubview(timerLabel)
+        view.addSubview(startButton)
+        view.addSubview(pauseButton)
+        view.addSubview(resetButton)
+
+        // Imposta i vincoli per i controlli
+        setupConstraints()
+    }
+
+    func setupConstraints() {
+        // Aggiungi i vincoli per i controlli qui
+    }
+
+    @objc func startTimer() {
+        if !isTimerRunning {
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+            isTimerRunning = true
+        }
+    }
+
+    @objc func pauseTimer() {
+        timer.invalidate()
+        isTimerRunning = false
+    }
+
+    @objc func resetTimer() {
+        timer.invalidate()
+        isTimerRunning = false
+        seconds = 60
+        updateTimerLabel()
+    }
+
+    @objc func updateTimer() {
+        if seconds > 0 {
+            seconds -= 1
+            updateTimerLabel()
+        } else {
+            timer.invalidate()
+            isTimerRunning = false
+        }
+    }
+
+    func updateTimerLabel() {
+        let minutes = seconds / 60
+        let seconds = seconds % 60
+        timerLabel.text = String(format: "%02d:%02d", minutes, seconds)
+    }
+}
+
+// Esempio di utilizzo
+let timerViewController = TimerViewController()
+// Presenta la vista del timer, ad esempio, utilizzando UINavigationController
+let navigationController = UINavigationController(rootViewController: timerViewController)
+// Mostra la vista del timer
+PlaygroundPage.current.liveView = navigationController
